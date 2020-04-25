@@ -19,6 +19,8 @@ const compose = (...functions) => data =>
     protein.removeClass('is-invalid')
   })
 
+  const list = []
+
   const validateInputs = () => {
 
     description.val() ? '' : description.addClass('is-invalid')
@@ -30,8 +32,16 @@ const compose = (...functions) => data =>
     calories.val() && 
     carbs.val() && 
     protein.val()
-    ) {
-      console.log('ok')
-    }
+    ) add()
   }
 
+  const add = () => {
+    const newItem = {
+      description: description.val(),
+      calories: parseInt(calories.val()),
+      carbs: parseInt(carbs.val()),
+      protein: parseInt(protein.val())
+    }
+    list.push(newItem)
+    console.log(list)
+  }
