@@ -43,5 +43,13 @@ const compose = (...functions) => data =>
       protein: parseInt(protein.val())
     }
     list.push(newItem)
+    cleanInputs()
     console.log(list)
+  }
+
+  const cleanInputs = () => {
+    description.val('')
+    calories.val('')
+    carbs.val('')
+    protein.val('')
   }
