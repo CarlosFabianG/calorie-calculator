@@ -9,27 +9,33 @@ const compose = (...functions) => data =>
       let attr = keys[i]
       attrs.push(`${attr}="${obj[attr]}"`)
     }
-    const string = attrs.join('')
+    const string = attrs.join(' ')
     return string 
   }
 
   const tagAttrs = obj => (content = '') => 
-  `<${obj.tag}>${obj.attrs ? ' ' : ''}${attrsToString(obj.attrs)}>${content}</${obj.tag}`
+  `<${obj.tag}${obj.attrs ? ' ' : ''}${attrsToString(obj.attrs)}>${content}</${obj.tag}>`
 
   const tag = t => {
     if(typeof t === 'string'){
-      tagAttrs({tag: t})
-    }else{
-      tagAttrs(t)
+      return tagAttrs({tag: t})
     }
+      return tagAttrs(t)
   }
 
-  console.log(tag('h1')('title'))
+  const tableRowTag = tag('tr')
+  //const tableRow = items => tableRowTag(tableCells(items))
+  const tableRow = items => compose(tableRowTag, tableCells)(items)
+
+  const tableCell = tag('td')
+  const tableCells = items => items.map(tableCell).join('')
 
   const description = $('#description')
   const calories = $('#calories')
   const carbs = $('#carbs')
   const protein = $('#protein')
+
+  const list = []
 
   description.keypress(() => {
     description.removeClass('is-invalid')
@@ -44,7 +50,6 @@ const compose = (...functions) => data =>
     protein.removeClass('is-invalid')
   })
 
-  const list = []
 
   const validateInputs = () => {
 
@@ -68,8 +73,22 @@ const compose = (...functions) => data =>
       protein: parseInt(protein.val())
     }
     list.push(newItem)
+    updateTotals()
     cleanInputs()
-    console.log(list)
+    renderItems()
+  }
+
+  const updateTotals = () => {
+    let calories = 0, carbs = 0, protein = 0
+
+    list.map(item => {
+      calories += item.calories,
+      carbs += item.carbs,
+      protein += item.protein 
+    })
+    $('#totalCalories').text(calories)
+    $('#totalCarbs').text(carbs)
+    $('#totalProtein').text(protein)
   }
 
   const cleanInputs = () => {
@@ -77,4 +96,12 @@ const compose = (...functions) => data =>
     calories.val('')
     carbs.val('')
     protein.val('')
+  }
+
+  const renderItems = () => {
+    $('tbody').empty()
+
+    list.map(item => {
+      $('tbody').append(tableRow([item.description, item.calories, item.carbs, item.protein]))
+    })
   }
